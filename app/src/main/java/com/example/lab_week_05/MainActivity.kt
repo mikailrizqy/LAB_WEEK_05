@@ -62,16 +62,23 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<ImageData>>
             ) {
                 if (response.isSuccessful) {
-                    val image = response.body()
-                    val firstImage = image?.firstOrNull()?.imageUrl.orEmpty()
+                    val images = response.body()
+                    val firstImageObject = images?.firstOrNull()
 
-                    if (firstImage.isNotBlank()) {
-                        imageLoader.loadImage(firstImage, imageResultView)
-                    } else {
-                        Log.d(MAIN_ACTIVITY, "Missing image URL")
+                    // 1. Tetap tampilkan gambar menggunakan Glide
+                    val imageUrl = firstImageObject?.imageUrl.orEmpty()
+                    if (imageUrl.isNotBlank()) {
+                        imageLoader.loadImage(imageUrl, imageResultView)
                     }
 
-                    apiResponseView.text = getString(R.string.image_placeholder, firstImage)
+                    // --- BAGIAN KODE UNTUK ASSIGNMENT ---
+
+                    // 2. Ambil nama ras dari objek. Jika tidak ada, gunakan "Unknown"
+                    val catBreed = firstImageObject?.breeds?.firstOrNull()?.name ?: "Unknown"
+
+                    // 3. Tampilkan nama ras di TextView
+                    apiResponseView.text = getString(R.string.image_placeholder, catBreed)
+
                 } else {
                     Log.e(
                         MAIN_ACTIVITY, "Failed to get response\n" +
